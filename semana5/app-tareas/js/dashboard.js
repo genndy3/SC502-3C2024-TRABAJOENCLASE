@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
+    let isEditMode = false
+    let editingId;
     const tasks = [{
         id: 1,
         title: "Complete project report",
@@ -16,6 +18,12 @@ document.addEventListener('DOMContentLoaded', function(){
         id: 3,
         title: "Code Review",
         description: "Check partners code",
+        dueDate: "2024-12-01"
+    },
+    {
+        id: 4,
+        title: "Deploy",
+        description: "Check deploy steps",
         dueDate: "2024-12-01"
     }];
     
@@ -50,20 +58,70 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
 
-    function handleEditTask(event){
-        alert(event.target.dataset.id);
+    function handleEditTask(event) {
+        try {
+            const taskId = parseInt(event.target.dataset.id);
+            const task = tasks.find(t => t.id === taskId);
+            document.getElementById('task-title').value = task.title;
+            document.getElementById('task-desc').value = task.description;
+            document.getElementById('due-date').value = task.dueDate;
+            isEditMode = true;
+            editingId = taskId;
+            const modal = new bootstrap.Modal(document.getElementById('taskModal'));
+            modal.show();
+        } catch (error) {
+            alert("Error trying to edit a task");
+            console.error(error);
+        }
     }
 
 
     function handleDeleteTask(event){
-        alert(event.target.dataset.id);
+        const id = parseInt(event.target.dataset.id);
+        const index = tasks.findIndex( t => t.id == id);
+        tasks.splice(index,1);
+        loadTasks();
     }
 
-    document.getElementById('task-form').addEventListener('submit', function(e){
+    document.getElementById('task-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        alert("crear tarea");
+
+        const title = document.getElementById("task-title").value;
+        const description = document.getElementById("task-desc").value;
+        const dueDate = document.getElementById("due-date").value;
+        if (isEditMode) {
+            const task = tasks.find(t => t.id === editingId);
+            task.title = title;
+            task.description = description;
+            task.dueDate = dueDate;
+        } else {
+            const newTask = {
+                id: tasks.length + 1,
+                title: title,
+                description: description,
+                dueDate: dueDate
+            };
+            tasks.push(newTask);
+        }
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+        modal.hide();
+        editingId = null;
+        isEditMode = false;
+        loadTasks();
     });
 
     loadTasks();
 
+    document.getElementById('taskModal').addEventListener('show.bs.modal',function(){
+        if (!isEditMode){
+            document.getElementById('task-form').reset();
+        }
+    });
+
+    document.getElementById('taskModal').addEventListener('hidden.bs.modal',function(){
+        editingId = null;
+        isEditMode = false;
+    })
+    loadTasks();
 });
