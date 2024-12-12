@@ -8,3 +8,5 @@ session_destroy();
 
 logDebug('Usuario cerró sesión');
 
+header('Location: /semana11/app-tareas/index.html');
+
