@@ -2,7 +2,6 @@
 
 require 'db.php';
 
-
 function crearTarea($user_id, $title, $description, $due_date)
 {
     global $pdo;
@@ -15,7 +14,7 @@ function crearTarea($user_id, $title, $description, $due_date)
             'description' => $description,
             'due_date' => $due_date
         ]);
-
+        //devuelve el id de la tarea creada en la linea anterior
         return $pdo->lastInsertId();
     } catch (Exception $e) {
         logError("Error creando tarea: " . $e->getMessage());
@@ -43,6 +42,7 @@ function editarTarea($id, $title, $description, $due_date)
     }
 }
 
+//obtenerTareasPorUsuario
 function obtenerTareasPorUsuario($user_id){
     global $pdo;
     try {
@@ -56,13 +56,14 @@ function obtenerTareasPorUsuario($user_id){
     }
 }
 
+//Eliminar una tarea por id
 function eliminarTarea($id){
     global $pdo;
     try {
         $sql = "delete from tasks where id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        return $stmt->rowCount() > 0;
+        return $stmt->rowCount() > 0;// true si se elimina algo
     } catch (Exception $e) {
         logError("Error al eliminar la tareas: " . $e->getMessage() );
         return false;
@@ -73,7 +74,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 header('Content-Type: application/json');
 session_start();
 if(isset($_SESSION['user_id'])){
-
     $user_id = $_SESSION['user_id'];
     logDebug($user_id);
     switch ($method) {

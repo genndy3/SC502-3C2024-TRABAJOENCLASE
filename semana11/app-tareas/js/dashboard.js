@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    let isEditMode = false;
-    let edittingId;
+    let isEditMode = false
+    let editingId;
     let tasks = [];
     const API_URL = 'http://localhost:8000/semana11/app-tareas/backend/tasks.php';
 
-    async function loadTasks(){
-        //va al servidor por las tareas
+
+    async function loadTasks() {
         try{
             const response = await fetch(API_URL,{
                 method: 'GET',
@@ -25,23 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(err);
         }
     }
-    
-    function renderTasks(tasks) {
-        //traer las tareas desde el backend
+
+    function renderTasks() {
         const taskList = document.getElementById('task-list');
         taskList.innerHTML = '';
         tasks.forEach(function (task) {
-
-            let commentsList = '';
-            if (task.comments && task.comments.length > 0) {
-                commentsList = '<ul class="list-group list-group-flush">';
-                task.comments.forEach(comment => {
-                    commentsList += `<li class="list-group-item">${comment.description} 
-                    <button type="button" class="btn btn-sm btn-link remove-comment" data-visitid="${task.id}" data-commentid="${comment.id}">Remove</button>
-                    </li>`;
-                }); 
-                commentsList += '</ul>';
-            }
             const taskCard = document.createElement('div');
             taskCard.className = 'col-md-4 mb-3';
             taskCard.innerHTML = `
@@ -50,12 +38,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h5 class="card-title">${task.title}</h5>
                     <p class="card-text">${task.description}</p>
                     <p class="card-text"><small class="text-muted">Due: ${task.dueDate}</small> </p>
-                    ${commentsList}
-                     <button type="button" class="btn btn-sm btn-link add-comment"  data-id="${task.id}">Add Comment</button>
-
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <button class="btn btn-secondary btn-sm edit-task"data-id="${task.id}">Edit</button>
+                    <button class="btn btn-secondary btn-sm edit-task" data-id="${task.id}">Edit</button>
                     <button class="btn btn-danger btn-sm delete-task" data-id="${task.id}">Delete</button>
                 </div>
             </div>
